@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}بازی - اتاق {{ room.code }}{% endblock %}
+
+{% block content %}
+
+    <!-- ========== مرحله نمایش حرف ========== -->
+    <div class="card hidden letter-stage-card" id="letter-stage">
+        <div class="stage-title">حرف این راند</div>
+        <div class="letter-display" id="letter-display">-</div>
+        <div class="got-it-status" id="got-it-status">
+            <span class="dot"></span>
+            <span id="got-it-text">در حال آماده‌سازی...</span>
+        </div>
+        <button class="btn btn-primary btn-lg" id="got-it-btn">فهمیدم! ✅</button>
+    </div>
+
+    <!-- ========== مرحله وارد کردن کلمات ========== -->
+    <div class="card hidden" id="words-stage">
+        <div class="words-header">
+            <div>
+                <span class="stage-title">حرف</span>
+                <span class="letter-badge" id="words-letter">-</span>
+            </div>
+            <div class="timer" id="words-timer">--</div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-fill" style="width: 100%;"></div>
+        </div>
+
+        <form id="words-form">
+            <div class="words-grid">
+                <div class="form-group"><label>اسم</label><input type="text" class="form-control word-input"
+                                                                 data-field="name" autocomplete="off"></div>
+                <div class="form-group"><label>فامیل</label><input type="text" class="form-control word-input"
+                                                                   data-field="family" autocomplete="off"></div>
+                <div class="form-group"><label>شهر یا کشور</label><input type="text" class="form-control word-input"
+                                                                         data-field="city" autocomplete="off"></div>
+                <div class="form-group"><label>غذا</label><input type="text" class="form-control word-input"
+                                                                 data-field="food" autocomplete="off"></div>
+                <div class="form-group"><label>میوه و سبزیجات</label><input type="text" class="form-control word-input"
+                                                                            data-field="fruit" autocomplete="off"></div>
+                <div class="form-group"><label>حیوان</label><input type="text" class="form-control word-input"
+                                                                   data-field="animal" autocomplete="off"></div>
+                <div class="form-group"><label>اعضای بدن</label><input type="text" class="form-control word-input"
+                                                                       data-field="body" autocomplete="off"></div>
+                <div class="form-group"><label>اشیا</label><input type="text" class="form-control word-input"
+                                                                  data-field="object" autocomplete="off"></div>
+            </div>
+            <button type="submit" class="btn btn-success btn-lg" id="finish-btn">تمام کردم! 🏁</button>
+        </form>
+    </div>
+
+    <!-- ========== مرحله داوری ========== -->
+    <div class="card hidden" id="review-stage">
+        <div class="review-header">
+            <div>
+                <span class="stage-title">داوری فیلد</span>
+                <span class="field-badge" id="review-field-label">—</span>
+            </div>
+            <span class="progress-text" id="review-progress"></span>
+        </div>
+
+        <div class="review-progress-bar">
+            <div class="review-progress-fill" id="review-progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <div id="review-container"></div>
+
+        <div class="review-footer">
+            <div class="confirm-status" id="confirm-status">
+                <span id="confirm-text">0 از 0 نفر تایید کرده‌اند</span>
+                <div class="confirm-dots" id="confirm-dots"></div>
+            </div>
+            <button class="btn btn-secondary btn-lg" id="confirm-next-field-btn">
+                تایید و فیلد بعدی ✅
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== مرحله امتیازات ========== -->
+    <div class="card hidden" id="scores-stage">
+        <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">🏆 امتیازات</h2>
+        <table class="score-table" id="score-table">
+            <thead>
+            <tr>
+                <th>بازیکن</th>
+                <th>امتیاز کل</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button class="btn btn-primary btn-lg hidden" id="next-round-btn">یک دست دیگه ➡️</button>
+    </div>
+
+    <div class="card hidden" id="end-stage">
+        <h2 style="text-align: center; font-size: 1.5rem; margin-bottom: 1rem;">🎉 پایان بازی</h2>
+        <div id="winner-display" class="winner-display"></div>
+        <table class="score-table" id="final-score-table">
+            <thead>
+            <tr>
+                <th>رتبه</th>
+                <th>بازیکن</th>
+                <th>امتیاز</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const ROOM_CODE = "{{ room.code }}";
+        const CURRENT_SESSION = "{{ request.session.session_key }}";
+        const IS_HOST = "{{ room.host_session }}" === CURRENT_SESSION;
+    </script>
+    <script src="{% static 'js/game.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ورود به بازی اسم فامیل{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.8rem;">🎮 اسم فامیل</h1>
+
+    {% if error %}
+    <div style="background: rgba(225, 112, 85, 0.1); color: var(--danger); padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1rem; font-size: 0.9rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">نام نمایشی</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="نام خود را وارد کنید" required maxlength="50" value="{{ request.session.player_name|default:'' }}">
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button type="submit" name="action" value="create" class="btn btn-primary" style="flex: 1;">
+                ایجاد اتاق
+            </button>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+        <div class="form-group">
+            <label for="room_code">کد اتاق</label>
+            <input type="text" id="room_code" name="room_code" class="form-control" placeholder="کد ۶ رقمی" maxlength="6" pattern="\d{6}">
+        </div>
+        <button type="submit" name="action" value="join" class="btn btn-secondary" style="width: 100%;">
+            ورود به اتاق
+        </button>
+    </form>
+</div>
+{% endblock %}

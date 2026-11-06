@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}اسم فامیل{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="theme-toggle">
+    <button id="theme-toggle-btn" aria-label="تغییر تم">🌙</button>
+</div>
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+<script src="{% static 'js/theme.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

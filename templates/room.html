@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}لابی اتاق {{ room.code }}{% endblock %}
+
+{% block content %}
+<div class="card" id="room-app">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.4rem;">لابی اتاق</h1>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">کد اتاق:</span>
+            <strong id="room-code" style="font-size: 1.2rem; letter-spacing: 2px;">{{ room.code }}</strong>
+            <button class="copy-btn" id="copy-code" title="کپی">📋</button>
+        </div>
+    </div>
+
+    <div class="form-group" id="time-setting" style="display: none;">
+        <label for="round-time">زمان هر راند (ثانیه): <span id="round-time-label">{{ room.round_time }}</span></label>
+        <input type="range" id="round-time" min="30" max="120" step="10" value="{{ room.round_time }}">
+    </div>
+
+    <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">بازیکنان</h2>
+    <ul class="player-list" id="player-list">
+        <!-- توسط JS پر می‌شود -->
+    </ul>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-primary" id="ready-btn" style="flex: 1;">
+            آماده‌ام
+        </button>
+        <button class="btn btn-success hidden" id="start-btn" style="flex: 1;">
+            شروع بازی
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ROOM_CODE = "{{ room.code }}";
+    const CURRENT_SESSION = "{{ request.session.session_key }}";
+</script>
+<script src="{% static 'js/room.js' %}"></script>
+{% endblock %}
