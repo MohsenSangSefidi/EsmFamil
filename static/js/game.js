@@ -322,16 +322,20 @@ function buildReviewCard(sub, mySession) {
     const actions = document.createElement('div');
     actions.className = 'review-actions';
 
-    if (!isOwn && !isEmpty) {
-        const rejectBtn = document.createElement('button');
-        rejectBtn.type = 'button';
-        rejectBtn.className = 'vote-btn reject';
-        const rc = sub.reject_count || 0;
-        rejectBtn.innerHTML = `🗑 حذف${rc > 0 ? `<span class="vote-count">${rc}</span>` : ''}`;
-        if (myVote === 'reject') rejectBtn.classList.add('active');
-        rejectBtn.onclick = () => toggleReject(sub.id, rejectBtn);
-        actions.appendChild(rejectBtn);
+    if (!isEmpty) {
+        // دکمه‌ی حذف — فقط برای کلمات دیگران
+        if (!isOwn) {
+            const rejectBtn = document.createElement('button');
+            rejectBtn.type = 'button';
+            rejectBtn.className = 'vote-btn reject';
+            const rc = sub.reject_count || 0;
+            rejectBtn.innerHTML = `🗑 حذف${rc > 0 ? `<span class="vote-count">${rc}</span>` : ''}`;
+            if (myVote === 'reject') rejectBtn.classList.add('active');
+            rejectBtn.onclick = () => toggleReject(sub.id, rejectBtn);
+            actions.appendChild(rejectBtn);
+        }
 
+        // دکمه‌ی تکراری — فقط هاست (چه کلمه‌ی خودش، چه دیگران)
         if (IS_HOST) {
             const dupBtn = document.createElement('button');
             dupBtn.type = 'button';

@@ -167,10 +167,10 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def handle_vote_word(self, submission_id, vote_action):
         """
         actions:
-          'set_reject'      → افزودن رأی حذف
-          'clear_reject'    → پس گرفتن رأی حذف
-          'set_duplicate'   → علامت تکراری (فقط هاست)
-          'clear_duplicate' → برداشتن علامت تکراری (فقط هاست)
+          'set_reject'      → افزودن رأی حذف   (فقط برای کلمات دیگران)
+          'clear_reject'    → پس گرفتن رأی حذف (فقط برای کلمات دیگران)
+          'set_duplicate'   → علامت تکراری     (فقط هاست — حتی روی کلمه‌ی خودش)
+          'clear_duplicate' → برداشتن علامت    (فقط هاست — حتی روی کلمه‌ی خودش)
         """
         room = await self.get_room(self.room_code)
         if not room or room.status != 'review':
@@ -180,34 +180,37 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         submission = await self.get_submission(submission_id)
         if not player or not submission:
             return
-        if submission.player_id == player.id:
-            return  # رأی به کلمه‌ی خودت مجاز نیست
 
         is_host = await self.is_host(room, self.session_key)
+        is_own = submission.player_id == player.id
 
-        if vote_action == 'set_reject':
-            await self.save_vote(submission, player, 'reject')
-        elif vote_action == 'clear_reject':
-            await self.delete_vote(submission, player)
-        elif vote_action == 'set_duplicate':
+        # ۱) رأی حذف: هرگز روی کلمه‌ی خودت
+        if vote_action in ('set_reject', 'clear_reject'):
+            if is_own:
+                return
+
+        # ۲) علامت تکراری: فقط هاست (چه کلمه‌ی خودش، چه دیگران)
+        if vote_action in ('set_duplicate', 'clear_duplicate'):
             if not is_host:
                 await self.send_json({
                     'type': 'error',
                     'message': 'فقط هاست می‌تواند کلمه را تکراری علامت بزند',
                 })
                 return
+
+        # ۳) اجرای عملیات
+        if vote_action == 'set_reject':
+            await self.save_vote(submission, player, 'reject')
+        elif vote_action == 'clear_reject':
+            await self.delete_vote(submission, player)
+        elif vote_action == 'set_duplicate':
             await self.mark_duplicate(submission, True)
         elif vote_action == 'clear_duplicate':
-            if not is_host:
-                return
             await self.mark_duplicate(submission, False)
         else:
             return
 
         # ---- بازمحاسبه‌ی وضعیت ----
-        # نکته: حذف و تکراری **مستقل** هستند. اگر هر دو باشند،
-        # امتیاز 0 (حذف برنده) است؛ ولی علامت تکراری حفظ می‌شود
-        # تا اگر رأی‌ها پس گرفته شد و کلمه برگشت، 5 امتیاز بگیرد.
         reject_count = await self.count_votes(submission, 'reject')
         is_rejected = reject_count >= MIN_REJECT_VOTES_TO_DELETE
         is_duplicate = await self.get_is_duplicate(submission)
