@@ -1,5 +1,6 @@
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(
-    `ws://${window.location.host}/ws/room/${ROOM_CODE}/`
+    `${wsProtocol}${window.location.host}/ws/room/${ROOM_CODE}/`
 );
 
 const playerList = document.getElementById('player-list');
